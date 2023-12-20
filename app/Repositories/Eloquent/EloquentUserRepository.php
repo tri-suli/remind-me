@@ -6,6 +6,7 @@ namespace App\Repositories\Eloquent;
 
 use App\Models\User;
 use App\Repositories\EloquentRepository;
+use Illuminate\Support\Facades\Date;
 
 class EloquentUserRepository extends EloquentRepository
 {
@@ -15,6 +16,38 @@ class EloquentUserRepository extends EloquentRepository
     protected function eloquent(): string
     {
         return User::class;
+    }
+
+    /**
+     * Create user access token
+     *
+     * @param  User  $user
+     * @return string
+     */
+    public function createAccessToken(User $user): string
+    {
+        $expireAfterMinutes = config('sanctum.expiration');
+        $expiration = Date::now()->addMinutes($expireAfterMinutes);
+
+        $accessToken = $user->createToken('access_token', ['access-api'], $expiration);
+
+        return $accessToken->plainTextToken;
+    }
+
+    /**
+     * Create user refresh token
+     *
+     * @param  User  $user
+     * @return string
+     */
+    public function createRefreshToken(User $user): string
+    {
+        $expireAfterMinutes = config('sanctum.refresh_expiration');
+        $expiration = Date::now()->addMinutes($expireAfterMinutes);
+
+        $accessToken = $user->createToken('refresh_token', ['issue-access-token'], $expiration);
+
+        return $accessToken->plainTextToken;
     }
 
     /**
@@ -56,12 +89,20 @@ class EloquentUserRepository extends EloquentRepository
             'password' => bcrypt($attributes['password']),
         ]);
 
-        return $this->createProfile($user, [
+        $user = $this->createProfile($user, [
             'first_name' => $attributes['firstName'],
             'last_name'  => $attributes['lastName'],
             'gender'     => $attributes['gender'] ?? null,
             'dob'        => $attributes['dob'],
             'timezone'   => $attributes['timezone'],
         ]);
+
+        $accessToken = $this->createAccessToken($user);
+        $refreshToken = $this->createRefreshToken($user);
+
+        $user->access_token = $accessToken;
+        $user->refresh_token = $refreshToken;
+
+        return $user;
     }
 }

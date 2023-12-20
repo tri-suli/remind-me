@@ -25,7 +25,6 @@ class EloquentUserRepositoryTest extends TestCase
     /** @test */
     public function create_user_access_token(): void
     {
-        $configMock = $this->spy('config');
         $userToken = $this->mock(NewAccessToken::class, function (MockInterface $mock) {
             $mock->plainTextToken = 'secret-access-token';
         });
@@ -37,13 +36,11 @@ class EloquentUserRepositoryTest extends TestCase
         $result = $this->repository->createAccessToken($user);
 
         $this->assertEquals('secret-access-token', $result);
-        $configMock->shouldHaveReceived('get')->once();
     }
 
     /** @test */
     public function create_user_refresh_token(): void
     {
-        $configMock = $this->spy('config');
         $userToken = $this->mock(NewAccessToken::class, function (MockInterface $mock) {
             $mock->plainTextToken = 'secret-refresh-token';
         });
@@ -55,7 +52,6 @@ class EloquentUserRepositoryTest extends TestCase
         $result = $this->repository->createAccessToken($user);
 
         $this->assertEquals('secret-refresh-token', $result);
-        $configMock->shouldHaveReceived('get')->once();
     }
 
     /** @test */

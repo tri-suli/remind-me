@@ -2,6 +2,9 @@
 
 namespace App\Providers;
 
+use App\Http\Controllers\Service\User\RegisterController;
+use App\Repositories\Eloquent\EloquentUserRepository;
+use App\Repositories\EloquentRepository;
 use Illuminate\Support\ServiceProvider;
 
 class AppServiceProvider extends ServiceProvider
@@ -19,6 +22,8 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
-        //
+        $this->app->when(RegisterController::class)
+            ->needs(EloquentRepository::class)
+            ->give(EloquentUserRepository::class);
     }
 }

@@ -28,6 +28,8 @@ class UserObserver
     public function deleted(User $user): void
     {
         $user->profile()->delete();
+
+        $user->tokens()->delete();
     }
 
     /**

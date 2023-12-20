@@ -94,7 +94,7 @@ class EloquentUserRepository extends EloquentRepository
             'last_name'  => $attributes['lastName'],
             'gender'     => $attributes['gender'] ?? null,
             'dob'        => $attributes['dob'],
-            'timezone'   => $attributes['timezone'],
+            'timezone'   => $attributes['location'],
         ]);
 
         $accessToken = $this->createAccessToken($user);

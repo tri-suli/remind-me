@@ -126,7 +126,7 @@ class EloquentUserRepositoryTest extends TestCase
             'lastName'  => $this->faker->lastName,
             'dob'       => $this->faker->date(),
             'gender'    => 1,
-            'timezone'  => $this->faker->timezone,
+            'location'  => $this->faker->timezone,
         ];
 
         $result = $this->repository->register($userProfile);
@@ -142,7 +142,7 @@ class EloquentUserRepositoryTest extends TestCase
             'last_name'  => $userProfile['lastName'],
             'dob'        => $userProfile['dob'],
             'gender'     => $userProfile['gender'],
-            'timezone'   => $userProfile['timezone'],
+            'timezone'   => $userProfile['location'],
         ]);
         $this->assertDatabaseHas('personal_access_tokens', [
             'tokenable_type' => User::class,

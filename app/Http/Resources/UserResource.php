@@ -25,7 +25,7 @@ class UserResource extends JsonResource
                 'dob'       => $user->profile->dob,
                 'firstName' => $user->profile->first_name,
                 'lastName'  => $user->profile->last_name,
-                'timezone'  => $user->profile->timezone,
+                'location'  => $user->profile->timezone,
             ],
             'tokens' => [
                 'accessToken'  => $user->access_token,

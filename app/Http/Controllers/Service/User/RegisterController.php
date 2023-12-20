@@ -3,9 +3,9 @@
 namespace App\Http\Controllers\Service\User;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\User\StoreUserRequest;
 use App\Http\Resources\UserResource;
 use App\Repositories\EloquentRepository;
-use Illuminate\Http\Request;
 
 class RegisterController extends Controller
 {
@@ -29,7 +29,7 @@ class RegisterController extends Controller
     /**
      * Handle the incoming request.
      */
-    public function __invoke(Request $request): UserResource
+    public function __invoke(StoreUserRequest $request): UserResource
     {
         $user = $this->eloquentRepository->register(
             $request->only([
@@ -39,7 +39,7 @@ class RegisterController extends Controller
                 'password',
                 'gender',
                 'dob',
-                'timezone',
+                'location',
             ])
         );
 

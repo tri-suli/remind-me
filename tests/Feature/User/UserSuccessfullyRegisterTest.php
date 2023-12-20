@@ -21,8 +21,8 @@ class UserSuccessfullyRegisterTest extends TestCase
             'email'     => $this->faker->email,
             'gender'    => (string) rand(0, 1),
             'dob'       => $this->faker->date(),
-            'password'  => 'secret',
-            'timezone'  => $this->faker->timezone,
+            'password'  => $this->faker->password(11, 12),
+            'location'  => $this->faker->timezone,
         ];
 
         $response = $this->postJson(route('api.user.register'), $input);
@@ -35,7 +35,7 @@ class UserSuccessfullyRegisterTest extends TestCase
                 'dob'       => $input['dob'],
                 'firstName' => $input['firstName'],
                 'lastName'  => $input['lastName'],
-                'timezone'  => $input['timezone'],
+                'location'  => $input['location'],
             ])
             ->assertJsonPath('meta', [
                 'statusText' => 'created',

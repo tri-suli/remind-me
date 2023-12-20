@@ -2,6 +2,7 @@
 
 namespace App\Providers;
 
+use App\Http\Controllers\Service\User\DeleteController;
 use App\Http\Controllers\Service\User\RegisterController;
 use App\Repositories\Eloquent\EloquentUserRepository;
 use App\Repositories\EloquentRepository;
@@ -23,6 +24,10 @@ class AppServiceProvider extends ServiceProvider
     public function boot(): void
     {
         $this->app->when(RegisterController::class)
+            ->needs(EloquentRepository::class)
+            ->give(EloquentUserRepository::class);
+
+        $this->app->when(DeleteController::class)
             ->needs(EloquentRepository::class)
             ->give(EloquentUserRepository::class);
     }

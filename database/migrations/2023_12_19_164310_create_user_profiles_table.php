@@ -20,6 +20,7 @@ return new class extends Migration
             $table->enum('gender', Gender::values())->nullable();
             $table->date('dob');
             $table->string('timezone');
+            $table->softDeletes();
 
             $table->foreign('user_id')
                 ->references('id')
@@ -33,6 +34,9 @@ return new class extends Migration
      */
     public function down(): void
     {
+        Schema::table('user_profiles', function (Blueprint $table) {
+            $table->dropSoftDeletes();
+        });
         Schema::dropIfExists('user_profiles');
     }
 };

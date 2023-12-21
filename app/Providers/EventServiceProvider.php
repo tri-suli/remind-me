@@ -2,6 +2,8 @@
 
 namespace App\Providers;
 
+use App\Events\SendBirthdayMessage;
+use App\Listeners\SendMessage;
 use App\Models\User;
 use App\Observers\UserObserver;
 use Illuminate\Auth\Events\Registered;
@@ -19,6 +21,9 @@ class EventServiceProvider extends ServiceProvider
     protected $listen = [
         Registered::class => [
             SendEmailVerificationNotification::class,
+        ],
+        SendBirthdayMessage::class => [
+            SendMessage::class,
         ],
     ];
 

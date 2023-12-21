@@ -24,6 +24,7 @@ class UserProfileFactory extends Factory
             'gender'     => rand(0, 1),
             'dob'        => $this->faker->date(),
             'timezone'   => $this->faker->timezone,
+            'deleted_at' => null,
         ];
     }
 

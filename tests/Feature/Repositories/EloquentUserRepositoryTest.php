@@ -3,9 +3,11 @@
 namespace Tests\Feature\Repositories;
 
 use App\Models\User;
+use App\Models\UserProfile;
 use App\Repositories\Eloquent\EloquentUserRepository;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Foundation\Testing\WithFaker;
+use Illuminate\Support\Facades\Date;
 use Laravel\Sanctum\NewAccessToken;
 use Mockery\MockInterface;
 use Tests\TestCase;
@@ -154,5 +156,40 @@ class EloquentUserRepositoryTest extends TestCase
         ]);
         $this->assertEquals(50, strlen($result->access_token));
         $this->assertEquals(50, strlen($result->refresh_token));
+    }
+
+    /** @test */
+    public function should_receive_users_that_have_birthday_in_current_date(): void
+    {
+        Date::setTestNow();
+        $day = Date::now()->format('d');
+        $month = Date::now()->format('m');
+
+        $user1 = User::factory()->create();
+        UserProfile::factory()->belongsToUser($user1)->create([
+            'dob' => sprintf('1995-%s-%s', $month, $day),
+        ]);
+        $user2 = User::factory()->create();
+        UserProfile::factory()->belongsToUser($user2)->create([
+            'dob' => sprintf('1990-%s-%s', $month, $day),
+        ]);
+        $user3 = User::factory()->create();
+        UserProfile::factory()->belongsToUser($user3)->create([
+            'dob' => '1995-08-12',
+        ]);
+
+        $result = $this->repository->findBirthdayNow();
+
+        $this->assertCount(2, $result);
+        $this->assertEquals([
+            [
+                ...$user1->only('id', 'email', 'name'),
+                'profile' => $user1->profile->only(['id', 'user_id', 'first_name', 'last_name', 'dob', 'gender', 'timezone']),
+            ],
+            [
+                ...$user2->only('id', 'email', 'name'),
+                'profile' => $user2->profile->only(['id', 'user_id', 'first_name', 'last_name', 'dob', 'gender', 'timezone']),
+            ],
+        ], $result->toArray());
     }
 }

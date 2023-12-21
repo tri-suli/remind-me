@@ -2,6 +2,8 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -37,6 +39,27 @@ class UserProfile extends Model
         'dob',
         'timezone',
     ];
+
+    /**
+     * Get the user's full name.
+     */
+    protected function fullName(): Attribute
+    {
+        return Attribute::make(
+            get: fn ($value, array $attributes) => sprintf('%s %s', $attributes['first_name'], $attributes['last_name']),
+        );
+    }
+
+    /**
+     * Scope a query to only include popular users.
+     */
+    public function scopeBirthdayTimeNow(Builder $query): void
+    {
+        $month = now(config('app.timezone'))->format('m');
+        $day = now(config('app.timezone'))->format('d');
+
+        $query->whereDay('dob', $day)->whereMonth('dob', $month);
+    }
 
     /**
      * Get the related user's for this user profile's

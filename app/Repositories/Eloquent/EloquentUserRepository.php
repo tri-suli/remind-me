@@ -6,6 +6,7 @@ namespace App\Repositories\Eloquent;
 
 use App\Models\User;
 use App\Repositories\EloquentRepository;
+use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Support\Facades\Date;
 
 class EloquentUserRepository extends EloquentRepository
@@ -62,6 +63,22 @@ class EloquentUserRepository extends EloquentRepository
         $user->profile()->create($attributes);
 
         return $this->model->where('id', $user->id)->with('profile')->first();
+    }
+
+    /**
+     * Get the users who have birthday by today
+     *
+     * @return Collection
+     */
+    public function findBirthdayNow(): Collection
+    {
+        return $this->model->newQuery()
+            ->select(['id', 'name', 'email'])
+            ->whereHas('profile', function ($query) {
+                $query->birthdayTimeNow();
+            })
+            ->with('profile:id,user_id,first_name,last_name,dob,gender,timezone')
+            ->get();
     }
 
     /**

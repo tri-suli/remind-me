@@ -42,6 +42,7 @@ class SendMessageTest extends TestCase
             $mock->shouldReceive('offsetGet')->with('status')->andReturn('sent');
             $mock->shouldReceive('offsetGet')->with('sentTime')->andReturn($today->toDateTimeLocalString());
         });
+        Http::shouldReceive('retry')->withSomeOfArgs(3, 300)->andReturnSelf();
         Http::shouldReceive('post')
             ->with('http://localhost', ['email' => $user->email, 'message' => $event->message()])
             ->andReturn($mockResponse);
@@ -98,6 +99,7 @@ class SendMessageTest extends TestCase
             $mock->shouldNotReceive('offsetGet')->with('status')->andReturn('sent');
             $mock->shouldReceive('offsetGet')->with('sentTime')->andReturn($today->toDateTimeLocalString());
         });
+        Http::shouldReceive('retry')->withSomeOfArgs(3, 300)->andReturnSelf();
         Http::shouldReceive('post')
             ->with('http://localhost', ['email' => $user->email, 'message' => $event->message()])
             ->andReturn($mockResponse);

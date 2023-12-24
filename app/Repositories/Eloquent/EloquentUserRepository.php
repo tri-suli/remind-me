@@ -9,6 +9,13 @@ use App\Repositories\EloquentRepository;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Support\Facades\Date;
 
+/**
+ * @extends EloquentRepository
+ *
+ * @method User create(array $attributes)
+ * @method User|null find(int $id)
+ * @method User update(int $id, array $attributes)
+ */
 class EloquentUserRepository extends EloquentRepository
 {
     /**
@@ -119,6 +126,33 @@ class EloquentUserRepository extends EloquentRepository
 
         $user->access_token = $accessToken;
         $user->refresh_token = $refreshToken;
+
+        return $user;
+    }
+
+    /**
+     * Update existing user record including user profile by specified user's id
+     *
+     * @param  int  $id
+     * @param  array  $attributes
+     * @return User
+     */
+    public function updateWithProfile(int $id, array $attributes): User
+    {
+        $user = $this->find($id);
+        $user = $this->update($id, [
+            'name'  => $attributes['userName'] ?? $user->name,
+            'email' => $attributes['email'] ?? $user->email,
+        ]);
+
+        $userProfile = $user->profile;
+        $userProfile->update([
+            'first_name' => $attributes['firstName'] ?? $userProfile->first_name,
+            'last_name'  => $attributes['lastName'] ?? $userProfile->last_name,
+            'gender'     => $attributes['gender'] ?? $userProfile->gender,
+            'dob'        => $attributes['dob'] ?? $userProfile->dob,
+            'timezone'   => $attributes['location'] ?? $userProfile->timezone,
+        ]);
 
         return $user;
     }

@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Service;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\User\UpdateUserRequest;
 use App\Http\Resources\UserResource;
 use App\Repositories\EloquentRepository;
 use Illuminate\Http\Request;
@@ -70,7 +71,7 @@ class UserController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request): UserResource
+    public function update(UpdateUserRequest $request): UserResource
     {
         $user = $this->eloquentRepository->updateWithProfile($request->id,
             $request->only([

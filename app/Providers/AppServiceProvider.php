@@ -5,6 +5,7 @@ namespace App\Providers;
 use App\Console\Commands\Notification\SendBirthDayMessageCommand;
 use App\Http\Controllers\Service\User\DeleteController;
 use App\Http\Controllers\Service\User\RegisterController;
+use App\Http\Controllers\Service\UserController;
 use App\Repositories\Eloquent\EloquentUserRepository;
 use App\Repositories\EloquentRepository;
 use Illuminate\Support\ServiceProvider;
@@ -29,6 +30,10 @@ class AppServiceProvider extends ServiceProvider
             ->give(EloquentUserRepository::class);
 
         $this->app->when(DeleteController::class)
+            ->needs(EloquentRepository::class)
+            ->give(EloquentUserRepository::class);
+
+        $this->app->when(UserController::class)
             ->needs(EloquentRepository::class)
             ->give(EloquentUserRepository::class);
 

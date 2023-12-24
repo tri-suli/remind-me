@@ -23,6 +23,7 @@ class UserController extends Controller
      */
     public function __construct(EloquentRepository $eloquentRepository)
     {
+        $this->needsAccessApiToken();
         $this->eloquentRepository = $eloquentRepository;
     }
 

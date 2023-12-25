@@ -11,12 +11,27 @@ use PHPUnit\Framework\TestCase;
 
 class UserResourceTest extends TestCase
 {
-    /** @test */
-    public function it_will_return_http_enum_200(): void
+    /**
+     * @return string[]
+     */
+    public static function routeWithResponse200(): array
+    {
+        return [
+            'route user update' => ['api.user.update'],
+            'route user login'  => ['api.login'],
+        ];
+    }
+
+    /**
+     * @test
+     *
+     * @dataProvider routeWithResponse200
+     */
+    public function it_will_return_http_enum_200(string $routeName): void
     {
         Mockery::mock(Carbon::class);
         $mockRequest = Mockery::spy(Request::class);
-        $mockRequest->shouldReceive('routeIs')->with('api.user.update')->andReturnTrue();
+        $mockRequest->shouldReceive('routeIs')->with($routeName)->andReturnTrue();
         $mockResponse = Mockery::spy(JsonResponse::class);
         $resource = new UserResource([]);
 

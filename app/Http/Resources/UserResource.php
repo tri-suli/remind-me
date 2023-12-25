@@ -29,7 +29,7 @@ class UserResource extends JsonResource implements DynamicStatusCode
             ],
         ];
 
-        if ($this->getStatusCode($request) === HttpStatusCode::CREATED) {
+        if ($this->getStatusCode($request) === HttpStatusCode::CREATED || $request->routeIs('api.login')) {
             $data['tokens'] = [
                 'accessToken'  => $user->access_token,
                 'refreshToken' => $user->refresh_token,
@@ -67,7 +67,7 @@ class UserResource extends JsonResource implements DynamicStatusCode
     {
         if ($request->routeIs('api.user.register')) {
             return HttpStatusCode::CREATED;
-        } elseif ($request->routeIs('api.user.update')) {
+        } elseif ($request->routeIs('api.user.update') || $request->routeIs('api.login')) {
             return HttpStatusCode::OK;
         }
 

@@ -17,7 +17,8 @@ class ValidateInputUserFirstNameTest extends TestCase
     /** @test */
     public function it_should_not_has_error_input_required_user_first_name(): void
     {
-        Date::setTestNow();
+        $today = Date::now();
+        Date::setTestNow($today);
         $user = User::factory()->create();
         UserProfile::factory()->belongsToUser($user)->create();
         Sanctum::actingAs($user, ['access-api']);
@@ -39,7 +40,8 @@ class ValidateInputUserFirstNameTest extends TestCase
     /** @test */
     public function it_has_error_input_max_length_user_first_name(): void
     {
-        Date::setTestNow();
+        $today = Date::now();
+        Date::setTestNow($today);
         $user = User::factory()->create();
         UserProfile::factory()->belongsToUser($user)->create();
         Sanctum::actingAs($user, ['access-api']);
@@ -60,7 +62,7 @@ class ValidateInputUserFirstNameTest extends TestCase
                 ],
                 'meta' => [
                     'statusText' => 'unprocessable entity',
-                    'timestamp'  => now()->toDateTimeLocalString(),
+                    'timestamp'  => $today->toDateTimeLocalString(),
                 ],
             ])
             ->assertJsonMissingPath('data.errors.userName')

@@ -17,7 +17,8 @@ class ValidateInputUserGenderTest extends TestCase
     /** @test */
     public function it_should_not_has_error_input_user_gender_the_value_is_unset(): void
     {
-        Date::setTestNow();
+        $today = Date::now();
+        Date::setTestNow($today);
         $user = User::factory()->create();
         UserProfile::factory()->belongsToUser($user)->create();
         Sanctum::actingAs($user, ['access-api']);
@@ -40,7 +41,8 @@ class ValidateInputUserGenderTest extends TestCase
      */
     public function it_has_error_input_user_gender_when_the_value_is_not_0_or_1(string|int $gender): void
     {
-        Date::setTestNow();
+        $today = Date::now();
+        Date::setTestNow($today);
         $user = User::factory()->create();
         UserProfile::factory()->belongsToUser($user)->create();
         Sanctum::actingAs($user, ['access-api']);
@@ -61,7 +63,7 @@ class ValidateInputUserGenderTest extends TestCase
                 ],
                 'meta' => [
                     'statusText' => 'unprocessable entity',
-                    'timestamp'  => now()->toDateTimeLocalString(),
+                    'timestamp'  => $today->toDateTimeLocalString(),
                 ],
             ])
             ->assertJsonMissingPath('data.errors.userName')

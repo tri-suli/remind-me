@@ -20,7 +20,8 @@ class ValidateInputUserLocationTest extends TestCase
      */
     public function it_has_error_input_user_location_when_the_value_incorrect_timezone(string $locationFormat): void
     {
-        Date::setTestNow();
+        $today = Date::now();
+        Date::setTestNow($today);
 
         $response = $this->postJson(route('api.user.register'), [
             'email'     => $this->faker->email,
@@ -44,7 +45,7 @@ class ValidateInputUserLocationTest extends TestCase
                 ],
                 'meta' => [
                     'statusText' => 'unprocessable entity',
-                    'timestamp'  => now()->toDateTimeLocalString(),
+                    'timestamp'  => $today->toDateTimeLocalString(),
                 ],
             ])
             ->assertJsonMissingPath('data.errors.userName')

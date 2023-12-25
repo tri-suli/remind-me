@@ -57,7 +57,7 @@ class SendMessageTest extends TestCase
     public function it_will_not_call_send_message_api_when_the_hours_is_less_then_9_am(): void
     {
         $timezone = 'Asia/Jakarta';
-        $pastDate = now($timezone)->subHours(12);
+        $pastDate = Date::createFromTime('08', '00', '00', $timezone);
         Date::setTestNow($pastDate);
         $today = now($timezone);
         $user = User::factory()->create();

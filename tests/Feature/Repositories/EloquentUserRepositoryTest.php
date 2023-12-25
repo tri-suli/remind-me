@@ -2,6 +2,7 @@
 
 namespace Tests\Feature\Repositories;
 
+use App\Enums\Gender;
 use App\Models\User;
 use App\Models\UserProfile;
 use App\Repositories\Eloquent\EloquentUserRepository;
@@ -191,5 +192,129 @@ class EloquentUserRepositoryTest extends TestCase
                 'profile' => $user2->profile->only(['id', 'user_id', 'first_name', 'last_name', 'dob', 'gender', 'timezone']),
             ],
         ], $result->toArray());
+    }
+
+    /** @test */
+    public function can_update_user_n_user_profile_record_by_user_id(): void
+    {
+        $user = User::factory()->create();
+        $userProfile = UserProfile::factory()->belongsToUser($user)->create([
+            'gender'   => Gender::FEMALE->value,
+            'timezone' => 'Asia/Kuala_Lumpur',
+        ]);
+
+        $result = $this->repository->updateWithProfile($user->id, [
+            'userName'  => $newUserName = 'username',
+            'email'     => $newEmail = 'user@mail.com',
+            'firstName' => $newFirstName = 'First Name',
+            'lastName'  => $newLastName = 'Last Name',
+            'dob'       => $newDob = '1990-01-12',
+            'gender'    => $newGender = Gender::MALE->value,
+            'location'  => $newLocation = 'Asia/Jakarta',
+        ]);
+
+        $this->assertEquals($user->id, $result->id);
+        $this->assertDatabaseMissing('users', [
+            'id'    => $user->id,
+            'name'  => $user->name,
+            'email' => $user->email,
+        ]);
+        $this->assertDatabaseHas('users', [
+            'id'    => $user->id,
+            'name'  => $newUserName,
+            'email' => $newEmail,
+        ]);
+        $this->assertDatabaseMissing('user_profiles', [
+            'id'         => $userProfile->id,
+            'first_name' => $userProfile->first_name,
+            'last_name'  => $userProfile->last_name,
+            'dob'        => $userProfile->dob,
+            'gender'     => $userProfile->gender,
+            'timezone'   => $userProfile->timezone,
+        ]);
+        $this->assertDatabaseHas('user_profiles', [
+            'id'         => $userProfile->id,
+            'first_name' => $newFirstName,
+            'last_name'  => $newLastName,
+            'dob'        => $newDob,
+            'gender'     => $newGender,
+            'timezone'   => $newLocation,
+        ]);
+    }
+
+    /** @test */
+    public function update_with_profile_can_only_update_user_profile_by_user_id(): void
+    {
+        $user = User::factory()->create();
+        $userProfile = UserProfile::factory()->belongsToUser($user)->create([
+            'gender'   => Gender::FEMALE->value,
+            'timezone' => 'Asia/Kuala_Lumpur',
+        ]);
+
+        $result = $this->repository->updateWithProfile($user->id, [
+            'firstName' => $newFirstName = 'First Name',
+            'lastName'  => $newLastName = 'Last Name',
+            'dob'       => $newDob = '1990-01-12',
+            'gender'    => $newGender = Gender::MALE->value,
+            'location'  => $newLocation = 'Asia/Jakarta',
+        ]);
+
+        $this->assertEquals($user->id, $result->id);
+        $this->assertDatabaseHas('users', [
+            'id'    => $user->id,
+            'name'  => $user->name,
+            'email' => $user->email,
+        ]);
+        $this->assertDatabaseMissing('user_profiles', [
+            'id'         => $userProfile->id,
+            'first_name' => $userProfile->first_name,
+            'last_name'  => $userProfile->last_name,
+            'dob'        => $userProfile->dob,
+            'gender'     => $userProfile->gender,
+            'timezone'   => $userProfile->timezone,
+        ]);
+        $this->assertDatabaseHas('user_profiles', [
+            'id'         => $userProfile->id,
+            'first_name' => $newFirstName,
+            'last_name'  => $newLastName,
+            'dob'        => $newDob,
+            'gender'     => $newGender,
+            'timezone'   => $newLocation,
+        ]);
+    }
+
+    /** @test */
+    public function update_with_profile_can_only_update_user_by_user_id(): void
+    {
+        $user = User::factory()->create();
+        $userProfile = UserProfile::factory()->belongsToUser($user)->create([
+            'gender'   => Gender::FEMALE->value,
+            'timezone' => 'Asia/Kuala_Lumpur',
+        ]);
+
+        $result = $this->repository->updateWithProfile($user->id, [
+            'userName' => $newUserName = 'username',
+            'email'    => $newUserEmail = 'username@mail.com',
+        ]);
+
+        $this->assertEquals($user->id, $result->id);
+        $this->assertDatabaseMissing('users', [
+            'id'    => $user->id,
+            'name'  => $user->name,
+            'email' => $user->email,
+        ]);
+        $this->assertDatabaseHas('users', [
+            'id'    => $user->id,
+            'name'  => $newUserName,
+            'email' => $newUserEmail,
+        ]);
+        $this->assertDatabaseHas('user_profiles', [
+            'id'         => $userProfile->id,
+            'first_name' => $userProfile->first_name,
+            'last_name'  => $userProfile->last_name,
+            'dob'        => $userProfile->dob,
+            'gender'     => $userProfile->gender,
+            'timezone'   => $userProfile->timezone,
+        ]);
     }
 }

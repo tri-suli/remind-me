@@ -7,7 +7,7 @@ use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 
-class UserResource extends JsonResource
+class UserResource extends JsonResource implements DynamicStatusCode
 {
     /**
      * Transform the resource into an array.
@@ -17,21 +17,26 @@ class UserResource extends JsonResource
     public function toArray(Request $request): array
     {
         $user = $this->resource;
-
-        return [
+        $data = [
             'user' => [
+                'userName'  => $user->name,
                 'email'     => $user->email,
-                'gender'    => $user->profile->gender,
-                'dob'       => $user->profile->dob,
                 'firstName' => $user->profile->first_name,
                 'lastName'  => $user->profile->last_name,
+                'gender'    => $user->profile->gender,
+                'dob'       => $user->profile->dob,
                 'location'  => $user->profile->timezone,
             ],
-            'tokens' => [
+        ];
+
+        if ($this->getStatusCode($request) === HttpStatusCode::CREATED) {
+            $data['tokens'] = [
                 'accessToken'  => $user->access_token,
                 'refreshToken' => $user->refresh_token,
-            ],
-        ];
+            ];
+        }
+
+        return $data;
     }
 
     /**
@@ -39,7 +44,7 @@ class UserResource extends JsonResource
      */
     public function withResponse(Request $request, JsonResponse $response): void
     {
-        $response->setStatusCode(HttpStatusCode::CREATED->value);
+        $response->setStatusCode($this->getStatusCode($request)->value);
     }
 
     /**
@@ -49,9 +54,23 @@ class UserResource extends JsonResource
     {
         return [
             'meta' => [
-                'statusText' => HttpStatusCode::CREATED->text(),
+                'statusText' => $this->getStatusCode($request)->text(),
                 'timestamp'  => now()->toDateTimeLocalString(),
             ],
         ];
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public function getStatusCode(Request $request): HttpStatusCode
+    {
+        if ($request->routeIs('api.user.register')) {
+            return HttpStatusCode::CREATED;
+        } elseif ($request->routeIs('api.user.update')) {
+            return HttpStatusCode::OK;
+        }
+
+        return HttpStatusCode::ERROR_SERVER;
     }
 }

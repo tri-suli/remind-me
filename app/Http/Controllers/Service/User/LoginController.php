@@ -4,9 +4,9 @@ namespace App\Http\Controllers\Service\User;
 
 use App\Exceptions\CredentialMismatchException;
 use App\Http\Controllers\Controller;
+use App\Http\Requests\User\LoginRequest;
 use App\Http\Resources\UserResource;
 use App\Services\AuthService;
-use Illuminate\Http\Request;
 
 class LoginController extends Controller
 {
@@ -32,12 +32,12 @@ class LoginController extends Controller
      *
      * @throws CredentialMismatchException
      */
-    public function __invoke(Request $request): UserResource
+    public function __invoke(LoginRequest $request): UserResource
     {
         $user = $this->authService->resolveLoginUser();
 
         if (is_null($user)) {
-            throw new CredentialMismatchException(__('passwords.user'));
+            throw new CredentialMismatchException();
         }
 
         $this->authService->giveTokensToUser($user);

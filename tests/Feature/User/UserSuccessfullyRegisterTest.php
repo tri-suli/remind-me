@@ -30,11 +30,12 @@ class UserSuccessfullyRegisterTest extends TestCase
         $response
             ->assertCreated()
             ->assertJsonPath('data.user', [
+                'userName'  => $input['email'],
                 'email'     => $input['email'],
-                'gender'    => $input['gender'],
-                'dob'       => $input['dob'],
                 'firstName' => $input['firstName'],
                 'lastName'  => $input['lastName'],
+                'gender'    => $input['gender'],
+                'dob'       => $input['dob'],
                 'location'  => $input['location'],
             ])
             ->assertJsonPath('meta', [

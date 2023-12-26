@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\Service\User;
+use App\Http\Controllers\Service\UserController;
 use Illuminate\Routing\Router;
 use Illuminate\Support\Facades\Route;
 
@@ -15,9 +16,12 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-Route::prefix('v1')->group(function () {
-    Route::prefix('user')->name('api.user.')->group(function (Router $router) {
+Route::prefix('v1')->name('api.')->group(function (Router $router) {
+    $router->post('login', User\LoginController::class)->name('login');
+
+    Route::prefix('user')->name('user.')->group(function (Router $router) {
         $router->post('', User\RegisterController::class)->name('register');
         $router->delete('', User\DeleteController::class)->name('delete');
+        $router->patch('{id}', [UserController::class, 'update'])->name('update');
     });
 });

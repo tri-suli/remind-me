@@ -22,9 +22,9 @@ class SendMessageTest extends TestCase
     /** @test */
     public function it_will_call_send_message_api_and_return_birthday_message(): void
     {
-        Date::setTestNow();
         $timezone = 'Asia/Jakarta';
-        $today = now($timezone);
+        $today = Date::createFromTime('09', '00', '00', $timezone);
+        Date::setTestNow($today);
         $user = User::factory()->create();
         UserProfile::factory()->belongsToUser($user)->create([
             'dob'      => sprintf('1990-%s-%s', $today->month, $today->day),
@@ -57,7 +57,7 @@ class SendMessageTest extends TestCase
     public function it_will_not_call_send_message_api_when_the_hours_is_less_then_9_am(): void
     {
         $timezone = 'Asia/Jakarta';
-        $pastDate = now($timezone)->subHours(12);
+        $pastDate = Date::createFromTime('08', '00', '00', $timezone);
         Date::setTestNow($pastDate);
         $today = now($timezone);
         $user = User::factory()->create();
@@ -78,9 +78,9 @@ class SendMessageTest extends TestCase
     /** @test */
     public function it_will_log_error_message_api_when_try_to_send_birthday_message(): void
     {
-        Date::setTestNow();
         $timezone = 'Asia/Jakarta';
-        $today = now($timezone);
+        $today = Date::createFromTime('09', '00', '00', $timezone);
+        Date::setTestNow($today);
         $user = User::factory()->create();
         UserProfile::factory()->belongsToUser($user)->create([
             'dob'      => sprintf('1990-%s-%s', $today->month, $today->day),

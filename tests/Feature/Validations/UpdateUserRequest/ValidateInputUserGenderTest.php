@@ -1,15 +1,36 @@
 <?php
 
-namespace Feature\Validations\StoreUserRequest;
+namespace Feature\Validations\UpdateUserRequest;
 
+use App\Models\User;
+use App\Models\UserProfile;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Foundation\Testing\WithFaker;
 use Illuminate\Support\Facades\Date;
+use Laravel\Sanctum\Sanctum;
 use Tests\TestCase;
 
 class ValidateInputUserGenderTest extends TestCase
 {
     use RefreshDatabase, WithFaker;
+
+    /** @test */
+    public function it_should_not_has_error_input_user_gender_the_value_is_unset(): void
+    {
+        $today = Date::now();
+        Date::setTestNow($today);
+        $user = User::factory()->create();
+        UserProfile::factory()->belongsToUser($user)->create();
+        Sanctum::actingAs($user, ['access-api']);
+
+        $response = $this->patchJson(route('api.user.update', ['id' => $user->id]), [
+            'email' => $this->faker->email,
+        ]);
+
+        $response
+            ->assertOk()
+            ->assertJsonMissingPath('data.errors');
+    }
 
     /**
      * @dataProvider invalidGenderValueDataProvider
@@ -22,15 +43,12 @@ class ValidateInputUserGenderTest extends TestCase
     {
         $today = Date::now();
         Date::setTestNow($today);
+        $user = User::factory()->create();
+        UserProfile::factory()->belongsToUser($user)->create();
+        Sanctum::actingAs($user, ['access-api']);
 
-        $response = $this->postJson(route('api.user.register'), [
-            'email'     => $this->faker->email,
-            'password'  => $this->faker->password(11),
-            'firstName' => $this->faker->firstName,
-            'lastName'  => $this->faker->lastName,
-            'gender'    => $gender,
-            'dob'       => $this->faker->date(),
-            'location'  => $this->faker->timezone,
+        $response = $this->patchJson(route('api.user.update', ['id' => $user->id]), [
+            'gender' => $gender,
         ]);
 
         $response

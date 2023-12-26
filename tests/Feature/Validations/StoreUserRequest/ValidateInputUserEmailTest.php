@@ -15,7 +15,8 @@ class ValidateInputUserEmailTest extends TestCase
     /** @test */
     public function it_has_error_input_user_email(): void
     {
-        Date::setTestNow();
+        $today = Date::now();
+        Date::setTestNow($today);
         $email = $this->faker->email;
         User::factory()->create(['email' => $email]);
 
@@ -41,7 +42,7 @@ class ValidateInputUserEmailTest extends TestCase
                 ],
                 'meta' => [
                     'statusText' => 'unprocessable entity',
-                    'timestamp'  => now()->toDateTimeLocalString(),
+                    'timestamp'  => $today->toDateTimeLocalString(),
                 ],
             ])
             ->assertJsonMissingPath('data.errors.userName')

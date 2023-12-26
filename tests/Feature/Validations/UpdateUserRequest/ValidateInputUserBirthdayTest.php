@@ -17,7 +17,8 @@ class ValidateInputUserBirthdayTest extends TestCase
     /** @test */
     public function it_should_not_has_error_input_user_birthday_when_the_value_is_unset(): void
     {
-        Date::setTestNow();
+        $today = Date::now();
+        Date::setTestNow($today);
         $user = User::factory()->create();
         UserProfile::factory()->belongsToUser($user)->create();
         Sanctum::actingAs($user, ['access-api']);
@@ -44,7 +45,8 @@ class ValidateInputUserBirthdayTest extends TestCase
      */
     public function it_has_error_input_user_birthday_when_the_value_format_is_not_y_m_d(string $dobFormat): void
     {
-        Date::setTestNow();
+        $today = Date::now();
+        Date::setTestNow($today);
         $user = User::factory()->create();
         UserProfile::factory()->belongsToUser($user)->create();
         Sanctum::actingAs($user, ['access-api']);
@@ -65,7 +67,7 @@ class ValidateInputUserBirthdayTest extends TestCase
                 ],
                 'meta' => [
                     'statusText' => 'unprocessable entity',
-                    'timestamp'  => Date::now()->toDateTimeLocalString(),
+                    'timestamp'  => $today->toDateTimeLocalString(),
                 ],
             ])
             ->assertJsonMissingPath('data.errors.userName')

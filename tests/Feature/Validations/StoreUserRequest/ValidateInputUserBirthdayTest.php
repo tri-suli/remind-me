@@ -20,7 +20,8 @@ class ValidateInputUserBirthdayTest extends TestCase
      */
     public function it_has_error_input_user_birthday_when_the_value_format_is_not_y_m_d(string $dobFormat): void
     {
-        Date::setTestNow();
+        $today = Date::now();
+        Date::setTestNow($today);
 
         $response = $this->postJson(route('api.user.register'), [
             'email'     => $this->faker->email,
@@ -43,7 +44,7 @@ class ValidateInputUserBirthdayTest extends TestCase
                 ],
                 'meta' => [
                     'statusText' => 'unprocessable entity',
-                    'timestamp'  => Date::now()->toDateTimeLocalString(),
+                    'timestamp'  => $today->toDateTimeLocalString(),
                 ],
             ])
             ->assertJsonMissingPath('data.errors.userName')

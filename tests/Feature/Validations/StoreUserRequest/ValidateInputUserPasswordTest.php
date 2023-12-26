@@ -14,7 +14,8 @@ class ValidateInputUserPasswordTest extends TestCase
     /** @test */
     public function it_has_error_input_required_user_password(): void
     {
-        Date::setTestNow();
+        $today = Date::now();
+        Date::setTestNow($today);
 
         $response = $this->postJson(route('api.user.register'), [
             'userName'  => $this->faker->userName,
@@ -37,7 +38,7 @@ class ValidateInputUserPasswordTest extends TestCase
                 ],
                 'meta' => [
                     'statusText' => 'unprocessable entity',
-                    'timestamp'  => now()->toDateTimeLocalString(),
+                    'timestamp'  => $today->toDateTimeLocalString(),
                 ],
             ])
             ->assertJsonMissingPath('data.errors.userName')
@@ -52,7 +53,8 @@ class ValidateInputUserPasswordTest extends TestCase
     /** @test */
     public function it_has_error_input_min_length_user_password(): void
     {
-        Date::setTestNow();
+        $today = Date::now();
+        Date::setTestNow($today);
 
         $response = $this->postJson(route('api.user.register'), [
             'userName'  => $this->faker->userName,
@@ -76,7 +78,7 @@ class ValidateInputUserPasswordTest extends TestCase
                 ],
                 'meta' => [
                     'statusText' => 'unprocessable entity',
-                    'timestamp'  => now()->toDateTimeLocalString(),
+                    'timestamp'  => $today->toDateTimeLocalString(),
                 ],
             ])
             ->assertJsonMissingPath('data.errors.userName')

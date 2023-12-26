@@ -17,7 +17,8 @@ class ValidateInputUserLocationTest extends TestCase
     /** @test */
     public function it_should_not_has_error_input_location_when_value_is_unset(): void
     {
-        Date::setTestNow();
+        $today = Date::now();
+        Date::setTestNow($today);
         $user = User::factory()->create();
         UserProfile::factory()->belongsToUser($user)->create();
         Sanctum::actingAs($user, ['access-api']);
@@ -40,7 +41,8 @@ class ValidateInputUserLocationTest extends TestCase
      */
     public function it_has_error_input_user_location_when_the_value_incorrect_timezone(string $locationFormat): void
     {
-        Date::setTestNow();
+        $today = Date::now();
+        Date::setTestNow($today);
         $user = User::factory()->create();
         UserProfile::factory()->belongsToUser($user)->create();
         Sanctum::actingAs($user, ['access-api']);
@@ -61,7 +63,7 @@ class ValidateInputUserLocationTest extends TestCase
                 ],
                 'meta' => [
                     'statusText' => 'unprocessable entity',
-                    'timestamp'  => now()->toDateTimeLocalString(),
+                    'timestamp'  => $today->toDateTimeLocalString(),
                 ],
             ])
             ->assertJsonMissingPath('data.errors.userName')

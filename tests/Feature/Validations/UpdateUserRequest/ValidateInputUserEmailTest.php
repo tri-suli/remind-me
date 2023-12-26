@@ -17,7 +17,8 @@ class ValidateInputUserEmailTest extends TestCase
     /** @test */
     public function it_should_not_receive_error_input_unique_user_email_if_the_value_is_similar_with_existing_user_email(): void
     {
-        Date::setTestNow();
+        $today = Date::now();
+        Date::setTestNow($today);
         $user = User::factory()->create(['email' => $this->faker->email]);
         UserProfile::factory()->belongsToUser($user)->create();
         Sanctum::actingAs($user, ['access-api']);
@@ -34,7 +35,8 @@ class ValidateInputUserEmailTest extends TestCase
     /** @test */
     public function it_has_error_input_unique_user_email(): void
     {
-        Date::setTestNow();
+        $today = Date::now();
+        Date::setTestNow($today);
         $user = User::factory()->create(['email' => 'john@mail.com']);
         User::factory()->create(['email' => 'johndoe@mail.com']);
         Sanctum::actingAs($user, ['access-api']);
@@ -55,7 +57,7 @@ class ValidateInputUserEmailTest extends TestCase
                 ],
                 'meta' => [
                     'statusText' => 'unprocessable entity',
-                    'timestamp'  => now()->toDateTimeLocalString(),
+                    'timestamp'  => $today->toDateTimeLocalString(),
                 ],
             ]);
     }

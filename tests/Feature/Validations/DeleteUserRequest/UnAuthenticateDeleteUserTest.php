@@ -15,7 +15,8 @@ class UnAuthenticateDeleteUserTest extends TestCase
     /** @test */
     public function should_receive_un_authenticated_response_when_no_access_token_provide(): void
     {
-        Date::setTestNow();
+        $today = Date::now();
+        Date::setTestNow($today);
         User::factory()->create();
 
         $response = $this->deleteJson(route('api.user.delete'));
@@ -25,7 +26,7 @@ class UnAuthenticateDeleteUserTest extends TestCase
             ->assertJsonPath('data', ['message' => 'Your\'re not authorized to access this endpoint!'])
             ->assertJsonPath('meta', [
                 'statusText' => 'unauthenticated/unauthorized',
-                'timestamp'  => now()->toDateTimeLocalString(),
+                'timestamp'  => $today->toDateTimeLocalString(),
             ]);
     }
 
